@@ -17,8 +17,15 @@ provider "aws" {       #dados daquele provedor especifico
 resource "aws_instance" "app_server" {    #
   ami           = "ami-0efcece6bed30fd98" #id da imagem que que quero para minha instancia (nesse caso ubuntu)
   instance_type = "t2.micro"              #qual instancia que eu quero subir
-  key_name      = "iac-alura"
+  key_name      = "iac-alura"             #Adicionando uma chave ssh para acessar a instancia, criada como par de chaves na aws
 
+  #Dados do usuario
+  # user_data = <<-EOF
+  #             #!/bin/bash
+  #             cd /home/ubuntu
+  #             echo "<h1>Deploy feito via Terraform 2</h1>" > index.html
+  #             nohup busybox httpd -f -p 8080 &
+  #             EOF
   tags = {
     #nome que podemos colocar na instancia
     Name = "Instancia Terraform"

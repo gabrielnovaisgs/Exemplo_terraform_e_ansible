@@ -37,4 +37,5 @@ override.tf.json
 .terraformrc
 terraform.rc
 *.pem
+*.vscode/**/*
 # End of https://www.toptal.com/developers/gitignore/api/terraform
