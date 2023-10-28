@@ -1,0 +1,5 @@
+[terraform-ansible] #Nome do host
+54.71.45.5 #ip do host
+
+[terraform-prod]
+54.187.250.238

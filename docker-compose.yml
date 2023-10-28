@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  terraform:
+    container_name: terraform
+    image: hashicorp/terraform
+    volumes:
+      - ./:/app
+          

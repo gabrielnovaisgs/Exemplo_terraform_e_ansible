@@ -1,0 +1,47 @@
+- hosts: terraform-prod #qual host queremos acessar
+  tasks: #Quais tarefas serão executadas nesse host
+    - name: Instalando python3, virtualenv e o nmap
+      apt: #gerenciador de pacotes (gerais não só ubuntu)
+        pkg: 
+          - python3
+          - virtualenv
+          - nmap
+        update_cache: yes #atualiza o cache de pacotes
+      become: true #para executar como root
+    
+    - name: Git Clone
+      ansible.builtin.git: #modulo ansible para o Git
+        repo: https://github.com/alura-cursos/clientes-leo-api
+        dest: /home/ubuntu/teste #destino do clone
+        version: master #branch que será clonado
+        force: yes #para que o ansible sempre clone o repositório
+
+    - name: Instalando dependencias com pip (Django e Django Rest)
+      pip:
+        virtualenv: /home/ubuntu/teste/venv #caminho da virtualenv
+        requirements: /home/ubuntu/teste/requirements.txt #caminho do arquivo de dependencias
+
+    - name: Alterando o hosts do settings
+      lineinfile: #altera uma linha do arquivo
+        path: /home/ubuntu/teste/setup/settings.py #arquivo que será alterado
+        regexp: '^ALLOWED_HOSTS' #expressão regular para encontrar a linha
+        line: 'ALLOWED_HOSTS = ["*"]' # linha que será inserida
+        backrefs: yes # para que o ansible caso não encontre a linha, não insira nada
+
+    - name: Configurando o banco de dados
+      shell: |
+        source /home/ubuntu/teste/venv/bin/activate
+        python /home/ubuntu/teste/manage.py migrate
+      args: #Garantindo que o comando será executado no bash
+       executable: /bin/bash
+    - name: Carregando dados iniciais
+      shell: |
+        source /home/ubuntu/teste/venv/bin/activate
+        python /home/ubuntu/teste/manage.py loaddata clientes.json
+      args: #Garantindo que o comando será executado no bash
+            executable: /bin/bash
+
+    - name: iniciando o servidor
+      shell: |
+        source /home/ubuntu/teste/venv/bin/activate
+        nohup python /home/ubuntu/teste/manage.py runserver 0.0.0.0:8000 &

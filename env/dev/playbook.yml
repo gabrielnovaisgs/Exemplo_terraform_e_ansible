@@ -1,10 +1,11 @@
 - hosts: terraform-ansible #qual host queremos acessar
   tasks: #Quais tarefas serão executadas nesse host
-    - name: Instalando python3, virtualenv
+    - name: Instalando python3, virtualenv e o nmap
       apt: #gerenciador de pacotes (gerais não só ubuntu)
         pkg: 
           - python3
           - virtualenv
+          - nmap
         update_cache: yes #atualiza o cache de pacotes
       become: true #para executar como root
     
@@ -14,11 +15,17 @@
         name:
           - django
           - djangorestframework
+    # Possibilitando a idenpotencia
+    - name: Verificando se o projeto já existe
+      stat: #verifica se o arquivo existe
+        path: /home/ubuntu/teste/setup/settings.py
+      register: projeto #salva o resultado da verificação em uma variável
 
     - name: Iniciando o projeto
       shell: |
         source /home/ubuntu/teste/venv/bin/activate
         django-admin startproject setup /home/ubuntu/teste
+      when: not projeto.stat.exists
       args: #Garantindo que o comando será executado no bash
         executable: /bin/bash
 

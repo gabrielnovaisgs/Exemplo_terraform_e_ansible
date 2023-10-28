@@ -39,3 +39,5 @@ terraform.rc
 *.pem
 *.vscode/**/*
 # End of https://www.toptal.com/developers/gitignore/api/terraform
+dev-iac
+prod-iac
